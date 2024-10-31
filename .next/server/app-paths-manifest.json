@@ -1,6 +1,5 @@
 {
   "/page": "app/page.js",
   "/(publicpages)/home/page": "app/(publicpages)/home/page.js",
-  "/api/users/[id]/route": "app/api/users/[id]/route.js",
   "/api/users/route": "app/api/users/route.js"
 }
