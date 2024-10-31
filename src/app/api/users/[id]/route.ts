@@ -6,12 +6,14 @@ export function GET(req: NextRequest, { params }: { params: { id: string } }) {
     { id: 2, name: 'def' },
     { id: 3, name: 'ghi' }
   ];
+  
   const id = parseInt(params.id, 10);
-  const item = data.find(d => d.id === id);
+  const item = data.find(d => d.id === id); 
+  
   if (item) {
     return NextResponse.json({
       isSuccessful: true,
-      data: data
+      data: item
     });
   } else {
     return NextResponse.json({
@@ -20,3 +22,4 @@ export function GET(req: NextRequest, { params }: { params: { id: string } }) {
     }, { status: 404 });
   }
 }
+
