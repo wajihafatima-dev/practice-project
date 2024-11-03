@@ -1,10 +1,9 @@
 import mongoose from "mongoose";
 
-let isConnected = false; // Track the connection status
+let isConnected = false;
 
 async function connectDb() {
   if (isConnected) {
-    console.log("Using existing database connection");
     return;
   }
 
@@ -12,12 +11,13 @@ async function connectDb() {
     await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000, // 5-second timeout for server selection
     });
     isConnected = true;
-    console.log("Database connected");
+    console.log("Connected to database");
   } catch (error) {
-    console.error("Error connecting to database:", error);
-    throw new Error("Could not connect to database");
+    console.error("Database connection error:", error);
+    throw new Error("Could not connect to the database");
   }
 }
 
