@@ -1,19 +1,24 @@
-// /lib/connectDb.js
 import mongoose from "mongoose";
 
-const connectDb = async () => {
-    if (mongoose.connection.readyState >= 1) {
-        console.log("Database is already connected.");
-        return;
-    }
+let isConnected = false; // Track the connection status
 
-    try {
-        await mongoose.connect(process.env.MONGO_URI || ""); // Ensure you have your Mongo URI in .env
-        console.log("Database connected successfully.");
-    } catch (error) {
-        console.error("Database connection failed:", error);
-        throw new Error("Database connection error");
-    }
-};
+async function connectDb() {
+  if (isConnected) {
+    console.log("Using existing database connection");
+    return;
+  }
+
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    isConnected = true;
+    console.log("Database connected");
+  } catch (error) {
+    console.error("Error connecting to database:", error);
+    throw new Error("Could not connect to database");
+  }
+}
 
 export default connectDb;
