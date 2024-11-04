@@ -1,10 +1,42 @@
+// import mongoose from "mongoose";
+
+// import mongoose from "mongoose";
+
+// let isConnected = false;
+
+// function connectDb() {
+//   if (isConnected) {
+//     console.log("Using existing database connection");
+//     return;
+//   }
+
+//   if (!process.env.MONGO_URI) {
+//     console.error("MONGO_URI is not defined");
+//     throw new Error("Database URI is missing");
+//   }
+
+//   try {
+//     console.log("Attempting to connect to MongoDB...");
+//      mongoose.connect(process.env.MONGO_URI, {
+//       serverSelectionTimeoutMS: 5000,
+//     });
+//     isConnected = true;
+//     console.log("Connected to database");
+//   } catch (error) {
+//     console.error("Database connection error:", error);
+//     throw new Error("Could not connect to the database");
+//   }
+// }
+// export default connectDb;
+// lib/connectDb.ts
+
 import mongoose from 'mongoose';
 
-if (!process.env.MONGODB_URI) {
+if (!process.env.MONGO_URI) {
   throw new Error('Please add your Mongo URI to .env.local');
 }
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGO_URI = process.env.MONGO_URI;
 
 let cached:any = global.mongoose;
 
@@ -22,7 +54,7 @@ async function connectDb() {
       bufferCommands: false,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+    cached.promise = mongoose.connect(MONGO_URI, opts).then((mongoose) => {
       return mongoose;
     });
   }
@@ -31,3 +63,4 @@ async function connectDb() {
 }
 
 export default connectDb;
+
