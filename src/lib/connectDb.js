@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 let isConnected = false;
 
-export async function connectDb() {
+function connectDb() {
   if (isConnected) {
     console.log("Using existing database connection");
     return;
@@ -15,7 +15,7 @@ export async function connectDb() {
 
   try {
     console.log("Attempting to connect to MongoDB...");
-    await mongoose.connect(process.env.MONGO_URI, {
+     mongoose.connect(process.env.MONGO_URI, {
       serverSelectionTimeoutMS: 5000,
     });
     isConnected = true;
@@ -25,4 +25,4 @@ export async function connectDb() {
     throw new Error("Could not connect to the database");
   }
 }
-
+export default connectDb;
