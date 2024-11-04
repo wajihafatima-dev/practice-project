@@ -47,8 +47,9 @@ export async function POST(req:NextRequest) {
       { isSuccessful: true, data: newUser },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error:any) {
     console.error("Error saving user:", error);
+    console.error(error.stack); 
     return NextResponse.json(
       { isSuccessful: false, message: "Error saving user" },
       { status: 500 }
