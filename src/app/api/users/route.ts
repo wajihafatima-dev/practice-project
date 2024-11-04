@@ -68,44 +68,46 @@ export async function GET(req: NextRequest) {
   }
 }
 
+// Named export for POST request
 export async function POST(req: NextRequest) {
-    try {
-      console.log("Connecting to the database...");
-      await connectDb();
-      console.log("Database connected");
-  
-      const { firstname, lastname, email, password } = await req.json();
-  
-      // Basic validation
-      if (!firstname || !lastname || !email || !password) {
-        return NextResponse.json(
-          { isSuccessful: false, message: "All fields are required" },
-          { status: 400 }
-        );
-      }
-  
-      const existingUser = await userModel.findOne({ email });
-      if (existingUser) {
-        return NextResponse.json(
-          { isSuccessful: false, message: "Email already exists" },
-          { status: 400 }
-        );
-      }
-  
-      // Create a new user instance
-      const newUser = new userModel({ firstname, lastname, email, password });
-      await newUser.save();
-  
+  try {
+    console.log("Connecting to the database...");
+    await connectDb();
+    console.log("Database connected");
+
+    const { firstname, lastname, email, password } = await req.json();
+
+    // Basic validation
+    if (!firstname || !lastname || !email || !password) {
       return NextResponse.json(
-        { isSuccessful: true, data: newUser },
-        { status: 201 }
-      );
-    } catch (error) {
-      console.error("Error saving user:", error);
-      return NextResponse.json(
-        { isSuccessful: false, message: "Error saving user" },
-        { status: 500 }
+        { isSuccessful: false, message: "All fields are required" },
+        { status: 400 }
       );
     }
+
+    // Check if email already exists
+    const existingUser = await userModel.findOne({ email });
+    if (existingUser) {
+      return NextResponse.json(
+        { isSuccessful: false, message: "Email already exists" },
+        { status: 400 }
+      );
+    }
+
+    // Create a new user instance
+    const newUser = new userModel({ firstname, lastname, email, password });
+    await newUser.save();
+
+    return NextResponse.json(
+      { isSuccessful: true, data: newUser },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Error saving user:", error);
+    return NextResponse.json(
+      { isSuccessful: false, message: "Error saving user" },
+      { status: 500 }
+    );
   }
+}
 
