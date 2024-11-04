@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import connectDb from "../../../lib/connectDb";
+import {connectDb} from "../../../lib/connectDb";
 import userModel from "../../../model/userModel";
 
 export async function GET(req:NextRequest) {
