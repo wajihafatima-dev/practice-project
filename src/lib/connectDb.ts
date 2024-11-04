@@ -30,15 +30,20 @@
 // export default connectDb;
 // lib/connectDb.ts
 
-import mongoose from 'mongoose';
+import mongoose, { ConnectOptions } from 'mongoose';
 
-if (!process.env.MONGO_URI) {
+const MONGODB_URI = process.env.MONGODB_URI || '';
+
+if (!MONGODB_URI) {
   throw new Error('Please add your Mongo URI to .env.local');
 }
 
-const MONGO_URI = process.env.MONGO_URI;
+interface Cached {
+  conn: mongoose.Connection | null;
+  promise: Promise<mongoose.Connection> | null;
+}
 
-let cached:any = global.mongoose;
+let cached: Cached = global.mongoose;
 
 if (!cached) {
   cached = global.mongoose = { conn: null, promise: null };
@@ -50,17 +55,23 @@ async function connectDb() {
   }
 
   if (!cached.promise) {
-    const opts = {
+    const options:any = {
       bufferCommands: false,
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      keepAlive: true,
+      keepAliveInitialDelay: 300000, 
     };
 
-    cached.promise = mongoose.connect(MONGO_URI, opts).then((mongoose) => {
-      return mongoose;
+    cached.promise = mongoose.connect(MONGODB_URI, options).then((mongoose) => {
+      return mongoose.connection;
     });
   }
+
   cached.conn = await cached.promise;
   return cached.conn;
 }
 
 export default connectDb;
+
 
