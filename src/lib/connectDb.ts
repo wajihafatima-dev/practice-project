@@ -30,11 +30,11 @@
 // export default connectDb;
 // lib/connectDb.ts
 
-import mongoose, { ConnectOptions } from 'mongoose';
+import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI || '';
+const MONGO_URI = process.env.MONGO_URI || '';
 
-if (!MONGODB_URI) {
+if (!MONGO_URI) {
   throw new Error('Please add your Mongo URI to .env.local');
 }
 
@@ -63,7 +63,7 @@ async function connectDb() {
       keepAliveInitialDelay: 300000, 
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, options).then((mongoose) => {
+    cached.promise = mongoose.connect(MONGO_URI, options).then((mongoose) => {
       return mongoose.connection;
     });
   }
