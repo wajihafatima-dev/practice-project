@@ -5,7 +5,7 @@ import userModel from "../../../model/userModel";
 export async function GET(req:NextRequest) {
   try {
     await connectDb(); // Ensure the database connection is established
-    const users = await userModel.find();
+    const users = await userModel.find({});
     return NextResponse.json({ isSuccessful: true, users }, { status: 200 });
   } catch (error) {
     console.error("Error fetching users:", error);
