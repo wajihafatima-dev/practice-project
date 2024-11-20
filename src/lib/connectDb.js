@@ -32,46 +32,22 @@
 
 import mongoose from 'mongoose';
 
-const MONGO_URI = process.env.MONGO_URI || '';
-
-if (!MONGO_URI) {
-  throw new Error('Please add your Mongo URI to .env.local');
-}
-
-interface Cached {
-  conn: mongoose.Connection | null;
-  promise: Promise<mongoose.Connection> | null;
-}
-
-let cached: Cached = global.mongoose;
-
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
-}
-
-async function connectDb() {
-  if (cached.conn) {
-    return cached.conn;
+const connectDb = async () => {
+  if (mongoose.connection.readyState === 1) {
+    console.log('Using existing database connection');
+    return mongoose.connection.asPromise();
   }
-
-  if (!cached.promise) {
-    const options:any = {
-      bufferCommands: false,
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      keepAlive: true,
-      keepAliveInitialDelay: 300000, 
-    };
-
-    cached.promise = mongoose.connect(MONGO_URI, options).then((mongoose) => {
-      return mongoose.connection;
-    });
+  try {
+    const db = await mongoose.connect(process.env.MONGO_URI);
+    console.log('Database connected');
+    return db;
+  } catch (error) {
+    console.error('Database connection error:', error.message);
+    throw new Error('Database connection failed');
   }
-
-  cached.conn = await cached.promise;
-  return cached.conn;
-}
+};
 
 export default connectDb;
+
 
 

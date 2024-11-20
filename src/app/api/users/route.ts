@@ -1,6 +1,6 @@
 // import { NextRequest, NextResponse } from "next/server";
 // import connectDb from "../../../lib/connectDb";
-// import userModel from "../../../model/userModel";
+import User from "../../../model/userModel";
 
 
 // export async function GET(req: NextRequest) {
@@ -51,13 +51,13 @@
 // }
 import { NextRequest, NextResponse } from "next/server";
 import connectDb from "../../../lib/connectDb";
-import userModel from "../../../model/userModel";
+import bcrypt from 'bcryptjs';
 
-// Named export for GET request
+
 export async function GET(req: NextRequest) {
   try {
     await connectDb();
-    const users = await userModel.find({});
+    const users = await User.find({});
     return NextResponse.json({ isSuccessful: true, users }, { status: 200 });
   } catch (error) {
     console.error("Error fetching users:", error);
@@ -68,25 +68,21 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// Named export for POST request
 export async function POST(req: NextRequest) {
   try {
     console.log("Connecting to the database...");
     await connectDb();
     console.log("Database connected");
 
-    const { firstname, lastname, email, password } = await req.json();
-
-    // Basic validation
-    if (!firstname || !lastname || !email || !password) {
+    const { name, email, password } = await req.json();
+    if (!name || !email || !password) {
       return NextResponse.json(
         { isSuccessful: false, message: "All fields are required" },
         { status: 400 }
       );
     }
 
-    // Check if email already exists
-    const existingUser = await userModel.findOne({ email });
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return NextResponse.json(
         { isSuccessful: false, message: "Email already exists" },
@@ -94,20 +90,26 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Create a new user instance
-    const newUser = new userModel({ firstname, lastname, email, password });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+    });
     await newUser.save();
+    const { password: _, ...userData } = newUser.toObject();
 
     return NextResponse.json(
-      { isSuccessful: true, data: newUser },
+      { isSuccessful: true, data: userData },
       { status: 201 }
     );
-  } catch (error) {
-    console.error("Error saving user:", error);
+  } catch (error:any) {
+    console.error("Error saving user:", error.message);
     return NextResponse.json(
-      { isSuccessful: false, message: "Error saving user" },
+      { isSuccessful: false, message: "Internal Server Error" },
       { status: 500 }
     );
   }
 }
+
 
