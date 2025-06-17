@@ -49,15 +49,16 @@ import User from "../../../model/userModel";
 //     );
 //   }
 // }
+// src/app/api/users/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import connectDb from "../../../lib/connectDb";
-import bcrypt from 'bcryptjs';
+import connectDb from "@/lib/connectDb"; // Use alias if you have it
+import bcrypt from "bcryptjs";
 
-
+// GET: Fetch all users
 export async function GET(req: NextRequest) {
   try {
     await connectDb();
-    const users = await User.find({});
+    const users = await User.find();
     return NextResponse.json(users);
   } catch (error) {
     console.error("Error fetching users:", error);
@@ -68,13 +69,13 @@ export async function GET(req: NextRequest) {
   }
 }
 
+// POST: Register a new user
 export async function POST(req: NextRequest) {
   try {
-    console.log("Connecting to the database...");
     await connectDb();
-    console.log("Database connected");
 
     const { name, email, password } = await req.json();
+
     if (!name || !email || !password) {
       return NextResponse.json(
         { isSuccessful: false, message: "All fields are required" },
@@ -96,14 +97,13 @@ export async function POST(req: NextRequest) {
       email,
       password: hashedPassword,
     });
+
     await newUser.save();
+
     const { password: _, ...userData } = newUser.toObject();
 
-    return NextResponse.json(
-      { isSuccessful: true, data: userData },
-      { status: 201 }
-    );
-  } catch (error:any) {
+    return NextResponse.json(userData);
+  } catch (error: any) {
     console.error("Error saving user:", error.message);
     return NextResponse.json(
       { isSuccessful: false, message: "Internal Server Error" },
@@ -111,5 +111,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-
 
