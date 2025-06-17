@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
   try {
     await connectDb();
     const users = await User.find({});
-    return NextResponse.json({ isSuccessful: true, users }, { status: 200 });
+    return NextResponse.json(users);
   } catch (error) {
     console.error("Error fetching users:", error);
     return NextResponse.json(
